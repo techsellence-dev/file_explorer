@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "aayushiworkflow",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "F:\\Amplify\\storage-app\\amplify\\backend\\api\\aayushiworkflow\\schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 365,
+      "apiKeyExpirationDate": "2023-06-16T18:12:27.906Z",
+      "keyDescription": "mydemoapi"
+    },
+    "conflictResolution": {},
+    "additionalAuthTypes": []
+  }
+}
