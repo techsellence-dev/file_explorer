@@ -3,26 +3,58 @@ import React, { Fragment,useState,useCallback,useEffect} from "react";
 import {API,Auth, graphqlOperation,Storage, label} from "aws-amplify";
 import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
+// import DocViewer from "react-doc-viewer";
 import * as queries from './graphql/queries';
 import * as mutations from './graphql/mutations'
 
 const App=()=>{
+
 	const[fileName,setfileName]=useState("");
 	const[filePath,setfilePath]=useState("");
+	const [filelist,setfilelist]=useState([])
 	useEffect(()=>{
-		// fetchName()
+		 fetchName()
 	},[])
+	
 async function fetchName(){
-	const name=await API.graphql(graphqlOperation(queries.listTodos))
+	try {
+		const name=await API.graphql(graphqlOperation(queries.listTodos))
+	
+	
 	const files=name.data.listTodos.items
-	// console.log(files)
-	const {fileAccessURL} = await Storage.get("sample.pdf");
-	console.log('access url', fileAccessURL);
+	setfilelist(files)
+	console.log(files)
+	
+	
+	} catch (error) {
+		console.log('error')
+	}}
+async function fetchdata(filedata){
+	try {
+		const fileAccessURL = await Storage.get(filedata.filePath);
+		 console.log('access url', fileAccessURL);
+	} catch (error) {
+		console.log('error')
+	}
 }
+	
 return(
-  <button onClick={()=>fetchName()}>Get file</button>
+	<>
+  
+  <div>
+  {filelist.map((item) => (
+	<div key={()=>item.id} onClick={()=>fetchdata(item)}>
+		<h1>{item.length==0?"np data":item.fileName}</h1>
+		<p>{item.length==0?"np data":item.filePath}</p>
+	</div>
+	))
+   }
+</div>
+   
+  </>
+  
 )
 }
 
 
-export default App;
+export default withAuthenticator(App);
