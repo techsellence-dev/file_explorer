@@ -38,8 +38,9 @@ async function fetchdata(filedata){
 	}
 }
 	
+
 return(
-	<>
+	<div>
   
   <div>
   {filelist.map((item) => (
@@ -50,9 +51,9 @@ return(
 	))
    }
 </div>
-   
-  </>
-  
+  <div></div> 
+  </div>
+
 )
 }
 
