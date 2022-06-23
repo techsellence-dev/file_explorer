@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React ,{useCallback, memo, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -9,6 +9,12 @@ import MailIcon from '@mui/icons-material/Mail';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import CommentIcon from '@mui/icons-material/Comment';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
   [`& .${treeItemClasses.content}`]: {
@@ -80,9 +86,32 @@ StyledTreeItem.propTypes = {
   labelText: PropTypes.string.isRequired,
 };
 
-export default function Pdf() {
+const data=[
+  {id:'1',name:'node1'},
+  {id:'2',name:'node2'},
+  {id:'3',name:'node3'},
+]
+ function Pdf() {
+ 
+  const [dataArr,setData]=useState([{id:'1',name:'node 1'},{id:'2',name:'node2'}])
+  const deleteItem=useCallback((value)=>{
+    for (var i = 0; i < dataArr.length; i++) {
+      if (value.id == dataArr[i].id) {
+        dataArr.splice(i, 1);
+        console.log(dataArr)
+        if(dataArr.length!=0)
+          return setData(dataArr)
+        else
+          console.log("data deleted")
+      }
+    }
+  },[dataArr])
+  useEffect(()=>{
+    setData(dataArr)
+    console.log("use effect")
+  },[dataArr])
   return (
-    <TreeView
+    <><TreeView
       aria-label="gmail"
       defaultExpanded={['3']}
       defaultCollapseIcon={<ArrowDropDownIcon />}
@@ -90,10 +119,12 @@ export default function Pdf() {
       defaultEndIcon={<div style={{ width: 24 }} />}
       sx={{ height: 600, flexGrow: 1, maxWidth: 200 }}
     >
-      <StyledTreeItem nodeId="1" labelText="File1" labelIcon={FileCopyIcon} >file</StyledTreeItem>
+      <StyledTreeItem nodeId="1" labelText="File1" labelIcon={FileCopyIcon} 
+        onClick={()=>alert("Hello")}
+      />
       
-      <StyledTreeItem nodeId="2" labelText="File2" labelIcon={FileCopyIcon} />
-      <StyledTreeItem nodeId="3" labelText="File3" labelIcon={FileCopyIcon}>
+      <StyledTreeItem nodeId="2" labelText="File2" labelIcon={FileCopyIcon}>
+
         <StyledTreeItem
           nodeId="5"
           labelText="File3-1"
@@ -103,31 +134,36 @@ export default function Pdf() {
           bgColor="#e8f0fe"
         />
         <StyledTreeItem
-          nodeId="6"
-          labelText="File3-2"
+          nodeId="5"
+          labelText="File3-1"
           labelIcon={FileCopyIcon}
-        //   labelInfo="2,294"
-          color="#e3742f"
-          bgColor="#fcefe3"
+        //   labelInfo="90"
+          color="#1a73e8"
+          bgColor="#e8f0fe"
         />
-        <StyledTreeItem
-          nodeId="7"
-          labelText="File3-3"
-          labelIcon={FileCopyIcon}
-        //   labelInfo="3,566"
-          color="#a250f5"
-          bgColor="#f3e8fd"
-        />
-        <StyledTreeItem
-          nodeId="8"
-          labelText="File3-4"
-          labelIcon={FileCopyIcon}
-        //   labelInfo="733"
-          color="#3c8039"
-          bgColor="#e6f4ea"
-        />
+      </StyledTreeItem>
+      <StyledTreeItem nodeId="3" labelText="File3" labelIcon={FileCopyIcon}>
+        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        {dataArr.map((value) => (
+          <ListItem
+            key={value.id}
+            disableGutters
+            secondaryAction={
+              <IconButton aria-label="comment">
+                <DeleteIcon />
+              </IconButton>
+            }
+            onClick={()=>deleteItem(value)}
+          >
+            <ListItemText primary={`Line item ${value.name}`} />
+          </ListItem>
+        ))}
+      </List>
       </StyledTreeItem>
       <StyledTreeItem nodeId="4" labelText="File4" labelIcon={FileCopyIcon} />
     </TreeView>
+    </>
+    
   );
 }
+export default memo(Pdf)
