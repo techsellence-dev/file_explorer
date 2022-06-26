@@ -98,28 +98,22 @@ function Pdf() {
   const [id, setId] = useState("");
   const [name, setName] = useState("");
   const data = [{ id: { id }, name: { name } }];
-  const [dataArr, setData] = useState(data);
+  const [dataArr, setData] = useState([]);
   const deleteItem = useCallback(
     (value) => {
       for (var i = 0; i < dataArr.length; i++) {
         if (value.id === dataArr[i].id) {
           dataArr.splice(i, 1);
           console.log(dataArr);
-          if (dataArr.length !== 0) return setData(dataArr);
-          else console.log("data deleted");
+          setData([ ...dataArr ]);
+          console.log("data deleted");
         }
       }
     },
     [dataArr]
   );
-  const addItem = (e) => {
-    setName(e.target.value);
-    // console.log(name);
-    setId(e.target.value);
-    // console.log(id);
-  };
   const create = () => {
-    dataArr.append("hey", JSON.stringify(dataArr));
+    setData([...dataArr,{id:id,name:name}])
   };
   useEffect(() => {
     setData(dataArr);
@@ -132,13 +126,13 @@ function Pdf() {
           <input
             type="text"
             placeholder="enter node name"
-            onChange={addItem}
+            onChange={(name)=>setName(name.target.value)}
           ></input>
           <br></br>
           <input
             type="text"
             placeholder="enter node id"
-            onChange={addItem}
+            onChange={(id)=>setId(id.target.value)}
           ></input>
           <br /> <br /> <br />
         </form>
