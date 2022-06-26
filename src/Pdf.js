@@ -105,7 +105,7 @@ function Pdf() {
         if (value.id === dataArr[i].id) {
           dataArr.splice(i, 1);
           console.log(dataArr);
-          setData([ ...dataArr ]);
+          setData([...dataArr]);
           console.log("data deleted");
         }
       }
@@ -113,7 +113,7 @@ function Pdf() {
     [dataArr]
   );
   const create = () => {
-    setData([...dataArr,{id:id,name:name}])
+    setData([...dataArr, { id: id, name: name }]);
   };
   useEffect(() => {
     setData(dataArr);
@@ -126,13 +126,13 @@ function Pdf() {
           <input
             type="text"
             placeholder="enter node name"
-            onChange={(name)=>setName(name.target.value)}
+            onChange={(name) => setName(name.target.value)}
           ></input>
           <br></br>
           <input
             type="text"
             placeholder="enter node id"
-            onChange={(id)=>setId(id.target.value)}
+            onChange={(id) => setId(id.target.value)}
           ></input>
           <br /> <br /> <br />
         </form>
@@ -174,6 +174,7 @@ function Pdf() {
         </StyledTreeItem>
         <StyledTreeItem nodeId="3" labelText="File3" labelIcon={FileCopyIcon}>
           <List
+            style={{ marginLeft: "30%" }}
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
             {dataArr.map((value) => (
