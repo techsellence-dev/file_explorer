@@ -15,6 +15,9 @@ import ListItemText from "@mui/material/ListItemText";
 import CommentIcon from "@mui/icons-material/Comment";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import * as queries from './graphql/queries';
+import * as mutations from './graphql/mutations'
+import {API,Auth, graphqlOperation,Storage, label} from "aws-amplify";
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
   [`& .${treeItemClasses.content}`]: {
@@ -95,23 +98,33 @@ StyledTreeItem.propTypes = {
 //   { id: "3", name: "node3" },
 // ];
 function Pdf() {
+  const[fileName,setfileName]=useState("");
+	const[filePath,setfilePath]=useState("");
+	const [filelist,setfilelist]=useState([])
   const [id, setId] = useState("");
   const [name, setName] = useState("");
   const data = [{ id: { id }, name: { name } }];
   const [dataArr, setData] = useState([]);
-  const deleteItem = useCallback(
-    (value) => {
-      for (var i = 0; i < dataArr.length; i++) {
-        if (value.id === dataArr[i].id) {
-          dataArr.splice(i, 1);
-          console.log(dataArr);
-          setData([...dataArr]);
-          console.log("data deleted");
-        }
+  const deleteItem = async (value)=>{
+    for (var i = 0; i < filelist.length; i++) {
+      if (value.orderID === filelist[i].orderID) {
+        filelist.splice(i, 1);
+        // console.log(filelist);
+       
+        console.log("data deleted");
+        const del=await API.graphql({
+          query:mutations.deleteOrder,
+          variables:{
+            input:{orderID:value.orderID}
+          }
+        })
+        console.log(del)
+        const fileAccessURL = await Storage.remove('first.pdf');
+		 console.log('access url', fileAccessURL);
+        setfilelist([...filelist]);
       }
-    },
-    [dataArr]
-  );
+    }
+  }
   const create = () => {
     setData([...dataArr, { id: id, name: name }]);
   };
@@ -119,6 +132,35 @@ function Pdf() {
     setData(dataArr);
     console.log("use effect");
   }, [dataArr]);
+
+  
+	useEffect(()=>{
+		 fetchName()
+		// fetchdata()
+	},[])
+	
+async function fetchName(){
+	try {
+		const name=await API.graphql(graphqlOperation(queries.listOrders))
+	
+	console.log(name)
+	const files=name.data.listOrders.items
+	setfilelist(files)
+	console.log(files)
+	
+	
+	} catch (error) {
+		console.log('error')
+	}}
+async function fetchdata(filedata){
+	try {
+		const fileAccessURL = await Storage.get('sample.pdf');
+		 console.log('access url', fileAccessURL);
+	} catch (error) {
+		console.log('error')
+	}
+}
+
   return (
     <>
       <div>
@@ -177,9 +219,9 @@ function Pdf() {
             style={{ marginLeft: "30%" }}
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
-            {dataArr.map((value) => (
+            {filelist.map((value) => (
               <ListItem
-                key={value.id}
+                key={value.orderID}
                 disableGutters
                 secondaryAction={
                   <IconButton aria-label="comment">
@@ -188,7 +230,7 @@ function Pdf() {
                 }
                 onClick={() => deleteItem(value)}
               >
-                <ListItemText primary={`Line item ${value.name}`} />
+                <ListItemText primary={`Line item ${value.orderID}`} />
               </ListItem>
             ))}
           </List>
