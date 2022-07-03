@@ -11,56 +11,56 @@ import * as mutations from './graphql/mutations'
 // import { configure } from "@testing-library/react";
  const App=({ signOut, user })=>{
 
-	const[fileName,setfileName]=useState("");
-	const[filePath,setfilePath]=useState("");
-	const [filelist,setfilelist]=useState([])
-	useEffect(()=>{
-		 fetchName()
+	// const[fileName,setfileName]=useState("");
+	// const[filePath,setfilePath]=useState("");
+	// const [filelist,setfilelist]=useState([])
+	// useEffect(()=>{
+		//  fetchName()
 		// fetchdata()
-	},[])
+// 	},[])
 	
-async function fetchName(){
-	try {
-		const name=await API.graphql(graphqlOperation(queries.listOrders))
+// async function fetchName(){
+// 	try {
+// 		const name=await API.graphql(graphqlOperation(queries.listOrders))
 	
-	console.log(name)
-	const files=name.data.listOrders.items
-	setfilelist(files)
-	console.log(files)
+// 	console.log(name)
+// 	const files=name.data.listOrders.items
+// 	setfilelist(files)
+// 	console.log(files)
 	
 	
-	} catch (error) {
-		console.log('error')
-	}}
-async function fetchdata(filedata){
-	try {
-		const fileAccessURL = await Storage.get('sample.pdf');
-		 console.log('access url', fileAccessURL);
-	} catch (error) {
-		console.log('error')
-	}
-}
+// 	} catch (error) {
+// 		console.log('error')
+// 	}}
+// async function fetchdata(filedata){
+// 	try {
+// 		const fileAccessURL = await Storage.get('sample.pdf');
+// 		 console.log('access url', fileAccessURL);
+// 	} catch (error) {
+// 		console.log('error')
+// 	}
+// }
 	
 
 return(
     <>
-	<div>
+	{/* <div>
   
   <div>
   {filelist.map((item) => (
 	<div key={()=>item.id} onClick={()=>fetchdata(item)}>
 		<h1>{item.length==0?"np data": item.orderID}</h1>
 		<p>{item.length==0?"np data":item.description}</p>
-	</div>
-	))
+	</div> */}
+	{/* ))
    }
 </div>
-  
+   */}
 
-<Heading level={1}>Hello {user.username}</Heading>
-      <Button onClick={signOut}>Sign out</Button>
+{/* <Heading level={1}>Hello {user.username}</Heading>
+      <Button onClick={signOut}>Sign out</Button> */}
     <Pdf></Pdf> 
-    </div>
+    {/* </div> */}
 	</> 
   
 

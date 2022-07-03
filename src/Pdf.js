@@ -15,6 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import CommentIcon from "@mui/icons-material/Comment";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone';
 import * as queries from './graphql/queries';
 import * as mutations from './graphql/mutations'
 import {API,Auth, graphqlOperation,Storage, label} from "aws-amplify";
@@ -105,6 +106,7 @@ function Pdf() {
   const [name, setName] = useState("");
   const data = [{ id: { id }, name: { name } }];
   const [dataArr, setData] = useState([]);
+  const[icon,seticon]= useState(true);
   const deleteItem = async (value)=>{
     for (var i = 0; i < filelist.length; i++) {
       if (value.orderID === filelist[i].orderID) {
@@ -163,7 +165,7 @@ async function fetchdata(filedata){
 
   return (
     <>
-      <div>
+      {/* <div>
         <form>
           <input
             type="text"
@@ -180,7 +182,7 @@ async function fetchdata(filedata){
         </form>
         <button onClick={create}>Submit</button>
         <br /> <br /> <br />
-      </div>
+      </div> */}
       <TreeView
         aria-label="gmail"
         defaultExpanded={["3"]}
@@ -217,21 +219,30 @@ async function fetchdata(filedata){
         <StyledTreeItem nodeId="3" labelText="File3" labelIcon={FileCopyIcon}>
           <List
             style={{ marginLeft: "30%" }}
-            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+            sx={{ width: "100%", maxWidth: 400, bgcolor: "background.paper" }}
           >
             {filelist.map((value) => (
+              <>
+          <Box style={{display:"flex"}}>
+            <IconButton sx={{flexGrow:1}}><FileCopyIcon/></IconButton>
               <ListItem
+           
                 key={value.orderID}
+               
                 disableGutters
                 secondaryAction={
                   <IconButton aria-label="comment">
-                    <DeleteIcon />
+                  {icon ? <DeleteIcon  onClick={() => deleteItem(value)} />:null}
+                   
+                    {/* <DeleteIcon  onClick={() => deleteItem(value)} /> */}
                   </IconButton>
                 }
-                onClick={() => deleteItem(value)}
+                // onClick={() => deleteItem(value)}
               >
-                <ListItemText primary={`Line item ${value.orderID}`} />
+                <ListItemText primary={`${value.orderID}`} />
               </ListItem>
+              </Box>
+              </>
             ))}
           </List>
         </StyledTreeItem>
