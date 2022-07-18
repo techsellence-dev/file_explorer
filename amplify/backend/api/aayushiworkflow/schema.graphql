@@ -30,8 +30,8 @@ type OrderTask @model @auth(rules:[
 ]){
   TaskID: String! @primaryKey
   NodeID: String!
-  NextNodeName: [String!]!
-  TaskAssignedTo: String!
+  NextNodeName: [String!]!  @index(name: "ByNextName", queryField: "taskByNextName")
+  TaskAssignedTo: String! 
 }
 
 type Workflow @model @auth(rules:[

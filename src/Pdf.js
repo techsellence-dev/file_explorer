@@ -1,4 +1,10 @@
-import React, { useCallback, memo, useState, useEffect } from "react";
+import React, {
+  useCallback,
+  memo,
+  useState,
+  useEffect,
+  useContext,
+} from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -15,10 +21,19 @@ import ListItemText from "@mui/material/ListItemText";
 import CommentIcon from "@mui/icons-material/Comment";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyTwoTone';
-import * as queries from './graphql/queries';
-import * as mutations from './graphql/mutations'
-import {API,Auth, graphqlOperation,Storage, label} from "aws-amplify";
+import FileCopyTwoToneIcon from "@mui/icons-material/FileCopyTwoTone";
+import * as queries from "./graphql/queries";
+import * as mutations from "./graphql/mutations";
+import FileViewer from "react-file-viewer";
+import { API, Auth, graphqlOperation, Storage, label } from "aws-amplify";
+import { HeightTwoTone, Public } from "@material-ui/icons";
+import OnEvent from "react-onevent";
+import { FaBeer } from "react-icons/fa";
+const pdfviewim = require("./Assets/pdf.png");
+const docviewim = require("./Assets/doc.png");
+const jpgviewim = require("./Assets/jpg.png");
+const xmlviewim = require("./Assets/xml.png");
+const fileviewim = require("./Assets/file.png");
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
   [`& .${treeItemClasses.content}`]: {
@@ -93,40 +108,36 @@ StyledTreeItem.propTypes = {
   labelText: PropTypes.string.isRequired,
 };
 
-// const data = [
-//   { id: "1", name: "node1" },
-//   { id: "2", name: "node2" },
-//   { id: "3", name: "node3" },
-// ];
 function Pdf() {
-  const[fileName,setfileName]=useState("");
-	const[filePath,setfilePath]=useState("");
-	const [filelist,setfilelist]=useState([])
+  const [fileName, setfileName] = useState("");
+  const [filePath, setfilePath] = useState("");
+  const [filelist, setfilelist] = useState([]);
   const [id, setId] = useState("");
   const [name, setName] = useState("");
   const data = [{ id: { id }, name: { name } }];
   const [dataArr, setData] = useState([]);
-  const[icon,seticon]= useState(true);
-  const deleteItem = async (value)=>{
+  const [icon, seticon] = useState(true);
+  const [a, setA] = useState([]);
+  const deleteItem = async (value) => {
     for (var i = 0; i < filelist.length; i++) {
       if (value.orderID === filelist[i].orderID) {
         filelist.splice(i, 1);
         // console.log(filelist);
-       
+
         console.log("data deleted");
-        const del=await API.graphql({
-          query:mutations.deleteOrder,
-          variables:{
-            input:{orderID:value.orderID}
-          }
-        })
-        console.log(del)
-        const fileAccessURL = await Storage.remove('first.pdf');
-		 console.log('access url', fileAccessURL);
+        const del = await API.graphql({
+          query: mutations.deleteOrder,
+          variables: {
+            input: { orderID: value.orderID },
+          },
+        });
+        console.log(del);
+        const fileAccessURL = await Storage.remove("first.pdf");
+        console.log("access url", fileAccessURL);
         setfilelist([...filelist]);
       }
     }
-  }
+  };
   const create = () => {
     setData([...dataArr, { id: id, name: name }]);
   };
@@ -135,54 +146,52 @@ function Pdf() {
     console.log("use effect");
   }, [dataArr]);
 
-  
-	useEffect(()=>{
-		 fetchName()
-		// fetchdata()
-	},[])
-	
-async function fetchName(){
-	try {
-		const name=await API.graphql(graphqlOperation(queries.listOrders))
-	
-	console.log(name)
-	const files=name.data.listOrders.items
-	setfilelist(files)
-	console.log(files)
-	
-	
-	} catch (error) {
-		console.log('error')
-	}}
-async function fetchdata(filedata){
-	try {
-		const fileAccessURL = await Storage.get('sample.pdf');
-		 console.log('access url', fileAccessURL);
-	} catch (error) {
-		console.log('error')
-	}
-}
+  useEffect(() => {
+    fetchName();
+
+    //  fetchdata()
+  }, []);
+
+  async function fetchName() {
+    try {
+      const name = await API.graphql(graphqlOperation(queries.listOrders));
+
+      const files = name.data.listOrders.items;
+      for (let i = 0; i < files.length; i++) {
+        const exten = files[i].description;
+        const fileExt = exten.split(".").pop();
+
+        files[i] = { ...files[i], type: fileExt };
+      }
+
+      setfilelist(files);
+      console.log(files);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function fetchdata(filedata) {
+    try {
+      const result = await Storage.get(`sixth.pdf`);
+      // , { download: true,level:Public }
+      // level?: private
+      console.log(result);
+      //  const fileAccessURL = await Storage.get(filedata.orderID);
+      //  setfilePath(fileAccessURL)
+      //  console.log(fileAccessURL)
+      // console.log(filedata)
+      // console.log('access url', fileAccessURL);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
-      {/* <div>
-        <form>
-          <input
-            type="text"
-            placeholder="enter node name"
-            onChange={(name) => setName(name.target.value)}
-          ></input>
-          <br></br>
-          <input
-            type="text"
-            placeholder="enter node id"
-            onChange={(id) => setId(id.target.value)}
-          ></input>
-          <br /> <br /> <br />
-        </form>
-        <button onClick={create}>Submit</button>
-        <br /> <br /> <br />
-      </div> */}
+      {/* <iframe src="https://docs.google.com/document/d/e/2PACX-1vT54SwfF8oJ1qH1mnIsaY88CeDXH1JIrZOVwkzOnFFFKhbHgQe3elFIkqEGPl1Z5ZWDDDfAMKAuTvBs/pub?embedded=true"></iframe>
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQngURS59TctWntZhZlm-VEPYvExsadEvGotffiwe4AmtEiV9CGi69UwX39jfb0VqwFaZy6NmJuIT6x/pubhtml?widget=true&amp;headers=false"></iframe> */}
+
       <TreeView
         aria-label="gmail"
         defaultExpanded={["3"]}
@@ -223,25 +232,44 @@ async function fetchdata(filedata){
           >
             {filelist.map((value) => (
               <>
-          <Box style={{display:"flex"}}>
-            <IconButton sx={{flexGrow:1}}><FileCopyIcon/></IconButton>
-              <ListItem
-           
-                key={value.orderID}
-               
-                disableGutters
-                secondaryAction={
-                  <IconButton aria-label="comment">
-                  {icon ? <DeleteIcon  onClick={() => deleteItem(value)} />:null}
-                   
-                    {/* <DeleteIcon  onClick={() => deleteItem(value)} /> */}
+                <Box style={{ display: "flex" }}>
+                  <IconButton
+                    sx={{ flexGrow: 1 }}
+                    onClick={() => fetchName(value)}
+                    primary={`${value.fileExt}`}
+                  >
+                  
+                    {value.type == "pdf" ? (
+                      <img src={pdfviewim} style={{ height: 20, width: 20 }} />
+                    ) : value.type == "doc" ? (
+                      <img src={docviewim} style={{ height: 20, width: 20 }} />
+                    ) : value.type == "jpg" ? (
+                      <img src={jpgviewim} style={{ height: 20, width: 20 }} />
+                      ) : value.type == "xml" ? (
+                        <img src={xmlviewim} style={{ height: 20, width: 20 }} />
+                        ):<img src={fileviewim} style={{heigth:20,width:20}}/>
+                         }
                   </IconButton>
-                }
-                // onClick={() => deleteItem(value)}
-              >
-                <ListItemText primary={`${value.orderID}`} />
-              </ListItem>
-              </Box>
+                  <ListItem
+                    key={value.orderID}
+                    disableGutters
+                    secondaryAction={
+                      <IconButton aria-label="comment">
+                        {icon ? (
+                          <DeleteIcon onClick={() => deleteItem(value)} style={{ color: "#4169E1" ,fontSize:"large"}}/>
+                        ) : null}
+
+                        {/* <DeleteIcon  onClick={() => deleteItem(value)} /> */}
+                      </IconButton>
+                    }
+                    // onClick={() => deleteItem(value)}
+                  >
+                    <ListItemText
+                      onClick={() => fetchdata(value)}
+                      primary={`${value.orderID}`}
+                    />
+                  </ListItem>
+                </Box>
               </>
             ))}
           </List>
